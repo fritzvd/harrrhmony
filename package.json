@@ -1,0 +1,25 @@
+{
+  "name": "harrrhmony",
+  "version": "0.0.1",
+  "description": "teaches you to sing in perfect harmony with friends",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/fritzvd/harrrhmony"
+  },
+  "keywords": [
+    "harrrhmony",
+    "harmony",
+    "webrtc",
+    "webaudio"
+  ],
+  "author": "fritzvd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fritzvd/harrrhmony/issues"
+  },
+  "homepage": "https://github.com/fritzvd/harrrhmony"
+}

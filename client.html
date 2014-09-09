@@ -1,0 +1,10 @@
+<video id="local" autoplay></video>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/webrtc.io/webrtc.io.js"></script>
+<script>
+  rtc.createStream('local');
+  rtc.connect('http://localhost:8000');
+  rtc.on('ready', function() {
+    // all streams are loaded
+  });
+</script>

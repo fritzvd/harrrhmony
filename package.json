@@ -4,7 +4,8 @@
   "description": "teaches you to sing in perfect harmony with friends",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "start": "./node_modules/.bin/beefy wavtofreq.js:bundle.js 3001"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,21 @@
   "bugs": {
     "url": "https://github.com/fritzvd/harrrhmony/issues"
   },
-  "homepage": "https://github.com/fritzvd/harrrhmony"
+  "homepage": "https://github.com/fritzvd/harrrhmony",
+  "dependencies": {
+    "webrtc": "~1.11.4",
+    "webrtc.io-client": "0.0.2-3",
+    "socket.io": "~1.1.0",
+    "webrtc.io": "0.0.4",
+    "wrtc": "0.0.29",
+    "web-audio-analyser": "~1.0.0",
+    "math": "0.0.3",
+    "mathjs": "~1.0.0",
+    "ndarray": "~1.0.15",
+    "music": "0.0.4"
+  },
+  "devDependencies": {
+    "beefy": "~2.1.1",
+    "browserify": "~5.11.1"
+  }
 }

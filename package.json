@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "teoria": "~1.2.0",
-    "beefy": "~2.1.1",
-    "browserify": "~5.11.1"
+    "express": "~4.9.0"
   }
 }

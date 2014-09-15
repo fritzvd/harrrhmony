@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm test",
-    "start": "./node_modules/.bin/beefy wavtofreq.js:bundle.js 3001"
+    "start": "./node_modules/.bin/beefy index.js:bundle.js 3001"
   },
   "repository": {
     "type": "git",
@@ -26,5 +26,8 @@
   "devDependencies": {
     "beefy": "~2.1.1",
     "browserify": "~5.11.1"
+  },
+  "dependencies": {
+    "teoria": "~1.2.0"
   }
 }

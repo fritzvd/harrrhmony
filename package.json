@@ -28,6 +28,8 @@
     "browserify": "~5.11.1"
   },
   "dependencies": {
-    "teoria": "~1.2.0"
+    "teoria": "~1.2.0",
+    "beefy": "~2.1.1",
+    "browserify": "~5.11.1"
   }
 }

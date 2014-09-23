@@ -4,7 +4,7 @@
   "description": "teaches you to sing in perfect harmony with friends",
   "main": "index.js",
   "scripts": {
-    "test": "npm test",
+    "test": "./node_modules/.bin/beefy index.js:bundle.js 3001",
     "start": "node server"
   },
   "repository": {

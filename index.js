@@ -6,6 +6,17 @@ navigator.getUserMedia  = navigator.getUserMedia ||
                           navigator.msGetUserMedia;
 
 
+
+
+var letterSize = function () {
+  console.log('i have been here')
+  var el = document.getElementById('note');
+  el.style = "font-size: " + window.innerHeight * 0.8 + 'px';
+}
+
+window.onresize = letterSize;
+document.onreadystatechange = letterSize;
+
 var signaltohertz = require('./signaltohertz');
 var harrrhmony = require('./harrrhmony');
 
@@ -45,11 +56,11 @@ function renderFrame () {
   analyser.getByteTimeDomainData(amplitude);
 
   frequency = signaltohertz(frequencies);
-      document.querySelector('#max').innerHTML = max ;
-    document.querySelector('#index').innerHTML = frequency  + '    Hz';
+    //   document.querySelector('#max').innerHTML = max ;
+    // document.querySelector('#index').innerHTML = frequency  + '    Hz';
       if (frequency > 20) {
       var note = harrrhmony(frequency);
-        document.querySelector('#note').innerHTML = note.note.note + JSON.stringify(note);
+        document.querySelector('#note').innerHTML = note.note.note.toString();
 
       }
 };

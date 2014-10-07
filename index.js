@@ -17,7 +17,7 @@ var letterSize = function () {
 window.onresize = letterSize;
 document.onreadystatechange = letterSize;
 
-var signaltohertz = require('./signaltohertz');
+var signaltohertz = require('signaltohertz');
 var harrrhmony = require('./harrrhmony');
 
 var audio, volume, frequencies, frequency, audioContext, analyser, 

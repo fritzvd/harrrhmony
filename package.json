@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "teoria": "~1.2.0",
-    "express": "~4.9.0"
+    "express": "~4.9.0",
+    "signaltohertz": "~0.1.1"
   }
 }

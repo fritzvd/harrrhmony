@@ -34,6 +34,7 @@
     "datachannel.io": "0.0.15",
     "node-static": "~0.7.6",
     "socket.io": "~1.1.0",
+    "socket.io-client": "~1.1.0",
     "webrtc.io": "0.0.4",
     "bitcrusher": "~0.3.0"
   }

@@ -11,6 +11,7 @@ var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDes
 
 var signaltohertz = require('signaltohertz');
 var harrrhmony = require('./harrrhmony');
+var socket = require('socket.io-client');
 
 var audio, volume, frequencies, frequency, audioContext, analyser, 
     microphone, waveform, amplitude, recorder;
@@ -57,7 +58,7 @@ function renderFrame () {
       }
 };
 
-var pc = new PeerConnection({
+var pc = new PeerConnection(['localhost:5000'], {
   iceServers: [{ url: "stun:localhost:5000"}]
 });
 

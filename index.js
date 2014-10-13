@@ -5,13 +5,15 @@ navigator.getUserMedia  = navigator.getUserMedia ||
                           navigator.mozGetUserMedia ||
                           navigator.msGetUserMedia;
 
+var PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+var SessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
+
 
 var signaltohertz = require('signaltohertz');
 var harrrhmony = require('./harrrhmony');
-var Webrtc = require('simplewebrtc');
 
 var audio, volume, frequencies, frequency, audioContext, analyser, 
-    microphone, waveform, amplitude;
+    microphone, waveform, amplitude, recorder;
 
 
 var streamingcb =  function (stream) {
@@ -22,9 +24,10 @@ var streamingcb =  function (stream) {
 
     volume = audioContext.createGain();
 
-    microphone = audioContext.createMediaElementSource(el);
+    microphone = audioContext.createMediaStreamSource (stream);
     microphone.connect(volume);
     microphone.connect(analyser);
+    window.microphone = microphone
     renderFrame();
   };
 
@@ -41,13 +44,11 @@ navigator.getUserMedia(
 function renderFrame () {
   setTimeout(requestAnimationFrame(renderFrame), 100);
   analyser.getFloatFrequencyData(frequencies);
-  analyser.getByteTimeDomainData(amplitude);
+  analyser.getByteFrequencyData(amplitude);
+
+  // console.log(amplitude)
 
   frequency = signaltohertz(frequencies);
-  console.log(frequency)
-  // console.log('yahoozie', frequency,  document.querySelector('#mine'));
-    //   document.querySelector('#max').innerHTML = max ;
-    // document.querySelector('#index').innerHTML = frequency  + '    Hz';
       if (frequency > 20) {
       var note = harrrhmony(frequency);
 
@@ -56,42 +57,35 @@ function renderFrame () {
       }
 };
 
+var pc = new PeerConnection({
+  iceServers: [{ url: "stun:localhost:5000"}]
+});
+
+window.pc = pc;
+
+var dataChannel = pc.createDataChannel("harrrhmony", {
+  ordered: false, // do not guarantee order
+  maxRetransmitTime: 3000, // in milliseconds
+});
+
+dataChannel.onmessage = function (event) {
+  console.log(event.data);
+};
+
+dataChannel.onopen = function () {
+  console.log('we are a ago')
+}
+
+dataChannel.onclose = function () {
+  console.log('closed');
+}
 
 
-
-
-// var webrtc = new Webrtc({
-//     // the id/element dom element that will hold "our" video
-//     localVideoEl: 'mine',
-//     // the id/element dom element that will hold remote videos
-//     remoteVideosEl: 'yours',
-//     // immediately ask for camera access
-//     autoRequestMedia: true,
-//     media: {
-//       video: false,
-//       audio: true
-//     },
-//     url: 'http://localhost:8888'
-// });
-
-// var audioM = document.querySelector("#mine");
- 
-
-// webrtc.on('localStream', function () {
-//   setTimeout(function () {
-//     streamingcb(audioM.children[0]);
-//     window.analyser = analyser
-//   }, 300);
-// });
-
-// webrtc.on('peerStreamAdded', function () {
-
-// })
-  
-
-// // we have to wait until it's ready
-// webrtc.on('readyToCall', function () {
-//   // you can name it anything
-//   webrtc.joinRoom('fritzio');
-// });
-
+var form = document.querySelector('form');
+form.onsubmit = function (e) {
+  e.preventDefault();
+  // message.prop('disabled', true);
+  dataChannel.send({
+    massa: 'this is a test'
+  });
+} ;

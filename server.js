@@ -10,10 +10,10 @@ var server = require('http').createServer(function (request, response) {
 
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
-  console.log('youre in')
-  socket.on('message', function (message) {
-    log('Got message: ', message);
-    socket.broadcast.emit('message', message);
+  console.log('youre in'  )
+  socket.on('recording', function (message) {
+    console.log('Got message: ', message);
+    socket.emit('notmyrecording', message);
   });
 });
 

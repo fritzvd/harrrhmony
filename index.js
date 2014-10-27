@@ -40,30 +40,37 @@ navigator.getUserMedia(
 var recording = [];
 var timer;
 
-function record () {
-  while (timer > 0)  {
-    console.log(timer);
-    var renderFrame = function () {
-      timer--;
-      setTimeout(requestAnimationFrame(renderFrame), 100);
-      analyser.getFloatFrequencyData(frequencies);
-      analyser.getByteFrequencyData(amplitude);
-      recording.push(amplitude);
-      // console.log(amplitude)
+var renderFrame = function () {
+  timer--;
+  analyser.getFloatFrequencyData(frequencies);
+  analyser.getByteFrequencyData(amplitude);
+  recording.push(amplitude);
 
-      frequency = signaltohertz(frequencies);
-          if (frequency > 20) {
-          var note = harrrhmony(frequency);
+  frequency = signaltohertz(frequencies);
+      if (frequency > 20) {
+      var note = harrrhmony(frequency);
 
-            document.querySelector('#mynote').innerHTML = note.note.note.toString();
+        document.querySelector('#mynote').innerHTML = note.note.note.toString();
 
-          }
-    };
-  };
-  socket.emit('recording', recording);
+      }
+  if (timer > 0) {
+    requestAnimationFrame(renderFrame);
+  } else {
+    socket.emit('recording', recording);
+  }
 };
 
 var socket = io.connect();
+socket.on('connect', function () {
+  console.log('idz i guess', arguments);
+});
+
+var people = {};
+
+socket.on('new users', function (newPeople) {
+  people = newPeople;
+});
+
 socket.on('notmyrecording', function (message) {
   console.log('message was: ', message);
 });
@@ -72,5 +79,5 @@ var form = document.querySelector('form');
 form.onsubmit = function (e) {
   e.preventDefault();
   timer = 20;
-  record();
+  renderFrame();
 };

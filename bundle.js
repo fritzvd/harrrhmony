@@ -58,6 +58,7 @@ navigator.getUserMedia(
   errorcb);
 
 var recording = [];
+var otherRecording = [];
 var timer;
 
 var renderFrame = function () {
@@ -81,26 +82,53 @@ var renderFrame = function () {
 };
 
 var socket = io.connect();
-socket.on('connect', function () {
-  console.log('idz i guess', arguments);
+
+var me;
+
+socket.on('welcome', function (newPeople) {
+  me = newPeople;
 });
 
-var people = {};
-
-socket.on('new users', function (newPeople) {
-  people = newPeople;
-});
-
-socket.on('notmyrecording', function (message) {
+socket.on('recording', function (message) {
   console.log('message was: ', message);
+  if (message.sender !== me) {
+    otherRecording = message.recording;
+    playOther();
+  }
 });
 
 var form = document.querySelector('form');
 form.onsubmit = function (e) {
   e.preventDefault();
   timer = 20;
+  recording = [];
   renderFrame();
 };
+
+var buildOtherCtx = function () {
+  otherCtx = new AudioContext();
+};
+
+var otherCtx, buf;
+var playOther = function () {
+  if (!otherCtx) {
+    buildOtherCtx();
+  };
+
+  otherCtx.decodeAudioData(otherRecording, function (buffer) {
+    buf = buffer;
+    play();
+  });
+};
+
+var play = function () {
+  var source = otherCtx.createBufferSource();
+  source.buffer = buf;
+  source.connect(context.destination);
+  source.start(0);
+};
+
+
 
 },{"./harrrhmony":1,"signaltohertz":3,"socket.io-client":4}],3:[function(require,module,exports){
 function calculateHertz (frequencies, options) {

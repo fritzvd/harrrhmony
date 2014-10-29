@@ -38,7 +38,7 @@ navigator.getUserMedia(
   streamingcb,
   errorcb);
 
-var recording = [];
+var recording = new ArrayBuffer(20);
 var otherRecording = [];
 var timer;
 
@@ -46,7 +46,7 @@ var renderFrame = function () {
   timer--;
   analyser.getFloatFrequencyData(frequencies);
   analyser.getByteFrequencyData(amplitude);
-  recording.push(amplitude);
+  recording[timer] = amplitude;
 
   frequency = signaltohertz(frequencies);
       if (frequency > 20) {
@@ -58,6 +58,7 @@ var renderFrame = function () {
   if (timer > 0) {
     requestAnimationFrame(renderFrame);
   } else {
+  window.recording = recording;
     socket.emit('recording', recording);
   }
 };
@@ -73,6 +74,7 @@ socket.on('welcome', function (newPeople) {
 socket.on('recording', function (message) {
   console.log('message was: ', message);
   if (message.sender !== me) {
+    window.recording = message.recording;
     otherRecording = message.recording;
     playOther();
   }
@@ -82,7 +84,7 @@ var form = document.querySelector('form');
 form.onsubmit = function (e) {
   e.preventDefault();
   timer = 20;
-  recording = [];
+  recording = new ArrayBuffer(20);
   renderFrame();
 };
 
@@ -98,6 +100,7 @@ var playOther = function () {
 
   otherCtx.decodeAudioData(otherRecording, function (buffer) {
     buf = buffer;
+  console.log('sdfasdfasdfsa')
     play();
   });
 };
@@ -105,8 +108,9 @@ var playOther = function () {
 var play = function () {
   var source = otherCtx.createBufferSource();
   source.buffer = buf;
-  source.connect(context.destination);
-  source.start(0);
+  console.log('sdfasdfasdfsa')
+  //source.connect(.destination);
+  //source.start(0);
 };
 
 

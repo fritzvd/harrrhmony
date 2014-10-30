@@ -58,15 +58,15 @@ navigator.getUserMedia(
   streamingcb,
   errorcb);
 
-var recording = new ArrayBuffer(20);
-var otherRecording = [];
+var recording = [];
+var otherRecording;
 var timer;
 
 var renderFrame = function () {
   timer--;
   analyser.getFloatFrequencyData(frequencies);
   analyser.getByteFrequencyData(amplitude);
-  recording[timer] = amplitude;
+  recording.push(amplitude);
 
   frequency = signaltohertz(frequencies);
       if (frequency > 20) {
@@ -94,8 +94,10 @@ socket.on('welcome', function (newPeople) {
 socket.on('recording', function (message) {
   console.log('message was: ', message);
   if (message.sender !== me) {
-    window.recording = message.recording;
-    otherRecording = message.recording;
+    otherRecording = new ArrayBuffer(20);
+    message.recording.forEach(function (arr, i) {
+      otherRecording[i] = arr;
+    });
     playOther();
   }
 });
@@ -104,7 +106,7 @@ var form = document.querySelector('form');
 form.onsubmit = function (e) {
   e.preventDefault();
   timer = 20;
-  recording = new ArrayBuffer(20);
+  recording = [];
   renderFrame();
 };
 

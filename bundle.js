@@ -30,6 +30,8 @@ var signaltohertz = require('signaltohertz');
 var harrrhmony = require('./harrrhmony');
 var io = require('socket.io-client');
 
+var recordingLength = 100;
+
 var audio, volume, frequencies, frequency, audioContext, analyser, 
     microphone, waveform, amplitude, recorder;
 
@@ -66,7 +68,7 @@ var renderFrame = function () {
   timer--;
   analyser.getFloatFrequencyData(frequencies);
   analyser.getByteFrequencyData(amplitude);
-  recording.push(amplitude);
+  recording.push(frequencies);
 
   frequency = signaltohertz(frequencies);
       if (frequency > 20) {
@@ -94,7 +96,7 @@ socket.on('welcome', function (newPeople) {
 socket.on('recording', function (message) {
   console.log('message was: ', message);
   if (message.sender !== me) {
-    otherRecording = new ArrayBuffer(20);
+    otherRecording = new ArrayBuffer(recordingLength);
     message.recording.forEach(function (arr, i) {
       otherRecording[i] = arr;
     });
@@ -105,21 +107,55 @@ socket.on('recording', function (message) {
 var form = document.querySelector('form');
 form.onsubmit = function (e) {
   e.preventDefault();
-  timer = 20;
+  timer = recordingLength;
   recording = [];
   renderFrame();
 };
 
 var buildOtherCtx = function () {
   otherCtx = new AudioContext();
+  source = otherCtx.createBufferSource();
 };
 
-var otherCtx, buf;
+var request;
+function getData() {
+  var audioCtx = otherCtx;
+  source = audioCtx.createBufferSource();
+  request = new XMLHttpRequest();
+
+  request.open('GET', 'letmego.wav', true);
+
+  request.responseType = 'arraybuffer';
+
+
+  request.onload = function() {
+    var audioData = request.response;
+
+    audioCtx.decodeAudioData(audioData, function(buffer) {
+      source.buffer = buffer;
+
+      source.connect(audioCtx.destination);
+      source.loop = true;
+    },
+
+    function(e){"Error with decoding audio data" + e.err});
+
+  }
+
+  request.send();
+}
+
+
+var otherCtx, buf, source;
 var playOther = function () {
   if (!otherCtx) {
+    console.log('yoohoo', otherCtx);
     buildOtherCtx();
   };
 
+  getData();
+
+    console.log('yoohoo', otherRecording);
   otherCtx.decodeAudioData(otherRecording, function (buffer) {
     buf = buffer;
   console.log('sdfasdfasdfsa')
@@ -131,8 +167,8 @@ var play = function () {
   var source = otherCtx.createBufferSource();
   source.buffer = buf;
   console.log('sdfasdfasdfsa')
-  //source.connect(.destination);
-  //source.start(0);
+  source.connect(otherCtx.destination);
+  source.start(0);
 };
 
 

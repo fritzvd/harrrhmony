@@ -123,6 +123,7 @@ function getData() {
   }
 
   request.send();
+  return source;
 }
 
 
@@ -142,6 +143,16 @@ var playOther = function () {
     play();
   });
 };
+
+var button = document.getElementById('clickMe');
+
+var onClick = function (e) {
+  buildOtherCtx();
+  console.log('asdfasdfa');
+  var source = getData();
+  source.start(0);
+};
+button.addEventListener('click', onClick);
 
 var play = function () {
   var source = otherCtx.createBufferSource();

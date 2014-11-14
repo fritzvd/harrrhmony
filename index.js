@@ -8,12 +8,14 @@ navigator.getUserMedia  = navigator.getUserMedia ||
 
 var signaltohertz = require('signaltohertz');
 var harrrhmony = require('./harrrhmony');
-var io = require('socket.io-client');
-
-var recordingLength = 100;
 
 var audio, volume, frequencies, frequency, audioContext, analyser, 
-    microphone, waveform, amplitude, recorder;
+    microphone, waveform, amplitude, recorder, songCtx, source;
+
+songCtx = new AudioContext();
+source = songCtx.createBufferSource();
+
+
 
 
 var streamingcb =  function (stream) {
@@ -28,20 +30,20 @@ var streamingcb =  function (stream) {
     microphone.connect(volume);
     microphone.connect(analyser);
     window.microphone = microphone
-    //renderFrame();
   };
 
 var errorcb = function (error) {
     console.log('Did not work', error)  
   };
 
-navigator.getUserMedia(
-  {audio: true, video: false},
+navigator.getUserMedia({
+    audio: true,
+    video: false
+  },
   streamingcb,
   errorcb);
 
 var recording = [];
-var otherRecording;
 var timer;
 
 var renderFrame = function () {
@@ -59,48 +61,12 @@ var renderFrame = function () {
       }
   if (timer > 0) {
     requestAnimationFrame(renderFrame);
-  } else {
-  window.recording = recording;
-    socket.emit('recording', recording);
-  }
+  } 
 };
 
-var socket = io.connect();
-
-var me;
-
-socket.on('welcome', function (newPeople) {
-  me = newPeople;
-});
-
-socket.on('recording', function (message) {
-  console.log('message was: ', message);
-  if (message.sender !== me) {
-    otherRecording = new ArrayBuffer(recordingLength);
-    message.recording.forEach(function (arr, i) {
-      otherRecording[i] = arr;
-    });
-    playOther();
-  }
-});
-
-var form = document.querySelector('form');
-form.onsubmit = function (e) {
-  e.preventDefault();
-  timer = recordingLength;
-  recording = [];
-  renderFrame();
-};
-
-var buildOtherCtx = function () {
-  otherCtx = new AudioContext();
-  source = otherCtx.createBufferSource();
-};
 
 var request;
 function getData() {
-  var audioCtx = otherCtx;
-  source = audioCtx.createBufferSource();
   request = new XMLHttpRequest();
 
   request.open('GET', 'letmego.wav', true);
@@ -111,10 +77,10 @@ function getData() {
   request.onload = function() {
     var audioData = request.response;
 
-    audioCtx.decodeAudioData(audioData, function(buffer) {
+    songCtx.decodeAudioData(audioData, function(buffer) {
       source.buffer = buffer;
 
-      source.connect(audioCtx.destination);
+      source.connect(songCtx.destination);
       source.loop = true;
     },
 
@@ -127,39 +93,12 @@ function getData() {
 }
 
 
-var otherCtx, buf, source;
-var playOther = function () {
-  if (!otherCtx) {
-    console.log('yoohoo', otherCtx);
-    buildOtherCtx();
-  };
-
-  getData();
-
-    console.log('yoohoo', otherRecording);
-  otherCtx.decodeAudioData(otherRecording, function (buffer) {
-    buf = buffer;
-  console.log('sdfasdfasdfsa')
-    play();
-  });
-};
-
 var button = document.getElementById('clickMe');
 
 var onClick = function (e) {
-  buildOtherCtx();
-  console.log('asdfasdfa');
-  var source = getData();
+  getData();
   source.start(0);
 };
 button.addEventListener('click', onClick);
-
-var play = function () {
-  var source = otherCtx.createBufferSource();
-  source.buffer = buf;
-  console.log('sdfasdfasdfsa')
-  source.connect(otherCtx.destination);
-  source.start(0);
-};
 
 
